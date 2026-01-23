@@ -3,9 +3,12 @@ package com.example.myapplication.presentation.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +17,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -25,21 +30,23 @@ import com.example.myapplication.data.navigation.Routes
 fun LoginScreen(viewModel: LoginViewModel, navController: NavHostController, modifier: Modifier) {
     val uiState = viewModel.uiState.collectAsState().value
     Column(
-        Modifier.fillMaxSize(),
+        Modifier
+            .fillMaxSize()
+            .padding(50.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OutlinedTextField(
             value = uiState.usuario,
             onValueChange = { viewModel.onUserTextChange(it) },
-            modifier.padding(10.dp),
+            modifier.fillMaxWidth().padding(vertical = 10.dp),
             shape = RoundedCornerShape(12.dp)
         )
 
         OutlinedTextField(
             value = uiState.senha,
             onValueChange = { viewModel.onSenhaTextChange(it) },
-            modifier.padding(10.dp),
+            modifier.fillMaxWidth().padding(vertical = 10.dp),
             shape = RoundedCornerShape(12.dp)
         )
         Button(
@@ -47,9 +54,17 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavHostController, mod
                 navController.navigate(Routes.CEP) {
                     popUpTo(Routes.LOGIN) { inclusive = true }
                 }
-            }
+            },
+            shape = RoundedCornerShape(12.dp),
+            modifier = modifier.height(50.dp)
         ) {
-            Text("Entrar")
+            Text(
+                "Entrar",
+                modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
