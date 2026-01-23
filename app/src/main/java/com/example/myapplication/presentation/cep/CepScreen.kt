@@ -27,11 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.myapplication.data.model.CepResult
 
 @Composable
 fun CepScreen(
     viewModel: CepViewModel = viewModel(),
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     var cepInput by remember { mutableStateOf("") }

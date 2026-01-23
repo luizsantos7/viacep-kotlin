@@ -1,11 +1,12 @@
 package com.example.myapplication.presentation.login
 
+import androidx.lifecycle.ViewModel
 import com.example.myapplication.presentation.cep.CepState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel {
+class LoginViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
