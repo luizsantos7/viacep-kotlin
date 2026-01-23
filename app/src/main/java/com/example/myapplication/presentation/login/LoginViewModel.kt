@@ -18,4 +18,11 @@ class LoginViewModel : ViewModel() {
     fun onSenhaTextChange(value: String){
         _uiState.value = uiState.value.copy(senha = value)
     }
+
+    fun isEnabled () : Boolean{
+        if (_uiState.value.usuario.isEmpty() and _uiState.value.senha.isEmpty())
+            return false
+
+        return true
+    }
 }

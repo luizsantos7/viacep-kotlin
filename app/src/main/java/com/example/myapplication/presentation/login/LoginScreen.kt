@@ -56,14 +56,14 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavHostController, mod
                 }
             },
             shape = RoundedCornerShape(12.dp),
-            modifier = modifier.height(50.dp)
+            modifier = modifier.height(50.dp),
+            enabled = viewModel.isEnabled()
         ) {
             Text(
                 "Entrar",
-                modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }

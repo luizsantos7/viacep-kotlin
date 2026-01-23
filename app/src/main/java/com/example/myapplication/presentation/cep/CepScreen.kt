@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -54,7 +56,9 @@ fun CepScreen(
 
         OutlinedTextField(
             value = cepInput,
-            onValueChange = { cepInput = it },
+            onValueChange = {
+                if (cepInput.length <= 8 && it.length <= 8)
+                cepInput = it },
             label = { Text("CEP") },
             placeholder = { Text("00000-000") },
             modifier = Modifier.fillMaxWidth(),
@@ -126,6 +130,21 @@ fun CepResultCard(cepResult: CepResult) {
             if (!cepResult.complemento.isNullOrBlank()) {
                 InfoRow(label = "Complemento", value = cepResult.complemento)
             }
+
+
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Button(
+                onClick = {},
+                shape = RoundedCornerShape(5.dp)
+            ) {
+                Text("Favoritar")
+            }
+
         }
     }
 }
@@ -146,4 +165,18 @@ fun InfoRow(label: String, value: String) {
             color = MaterialTheme.colorScheme.onSurface
         )
     }
+}
+
+@Preview
+@Composable
+private fun sdsdsdsdsdsdsdsdsdsdsd() {
+    val cep: CepResult = CepResult(
+        "sddsd",
+        "sddsd",
+        "sddsd",
+        "sddsd",
+        "sddsd",
+        "sddsd",
+    )
+    CepResultCard(cep)
 }
