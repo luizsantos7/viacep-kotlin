@@ -5,6 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ViaCepApi {
-    @GET("{cep}/json/")
+    @GET("ws/{cep}/json/")
     suspend fun buscarCep(@Path("cep") cep: String): CepResult
 }

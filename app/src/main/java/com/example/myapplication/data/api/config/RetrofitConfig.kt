@@ -12,7 +12,7 @@ import javax.net.ssl.X509TrustManager
 
 object RetrofitClient {
 
-    private const val VIACEP_BASE_URL = "http://viacep.com.br/ws/"
+    private const val VIACEP_BASE_URL = "http://viacep.com.br/"
 
     private const val BASE_URL = "http://jsonplaceholder.typicode.com/"
 

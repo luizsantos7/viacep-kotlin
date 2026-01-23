@@ -1,9 +1,5 @@
 package com.example.myapplication.data.model
 
-import kotlinx.serialization.Serializable
-
-
-@Serializable
 data class CepResult(
     val cep: String,
     val logradouro: String,
