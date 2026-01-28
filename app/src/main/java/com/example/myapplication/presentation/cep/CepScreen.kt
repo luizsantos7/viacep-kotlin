@@ -1,5 +1,7 @@
 package com.example.myapplication.presentation.cep
 
+import CepViewModel
+import CepViewModel.CepState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.data.model.CepResult
-import com.example.myapplication.presentation.cep.CepViewModel.CepState
 
 @Composable
 fun CepScreen(

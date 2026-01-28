@@ -1,33 +1,11 @@
-package com.example.myapplication.data.repository
+package com.example.myapplication.data
 
-import RetrofitClient
-import com.example.myapplication.data.dto.UserInputDto
-import com.example.myapplication.data.dto.UserInputDtoResponse
-import com.example.myapplication.data.model.UserResult
+import com.example.myapplication.data.local.UserDao
+import com.example.myapplication.data.local.UserEntity
 
-class UserRepository {
-    private val api = RetrofitClient.jsonApi
-
-    suspend fun buscarUsuarios(): Result<List<UserResult>> {
-        return try {
-            val users = api.buscarUsers()
-            Result.success(users)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun criarUsuario(input: UserInputDto): Result<UserResult> {
-        return try {
-            val response = api.postUser(input)
-
-            if (response.isSuccessful && response.body() != null) {
-                Result.success(response.body()!!)
-            } else {
-                Result.failure(Exception("Erro ao criar usuário: ${response.code()}"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+class UserRepository(private val userDao: UserDao) {
+    suspend fun insert(user: UserEntity) = userDao.insert(user)
+    suspend fun getAll() = userDao.getAll()
+    suspend fun findByUsername(username: String) = userDao.findByUsername(username)
+    suspend fun delete(user: UserEntity) = userDao.delete(user)
 }

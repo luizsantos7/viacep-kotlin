@@ -1,19 +1,12 @@
-package com.example.myapplication.data.model
+package com.example.myapplication.data.local
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Serializable
-data class UserResult(
-    @SerialName("id")
-    val id: String = "",
-
-    @SerialName("name")
+@Entity(tableName = "users")
+data class UserEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String = "",
-
-    @SerialName("email")
-    val email: String = "",
-
-    @SerialName("telefone")
-    val telefone: String? = null
+    val username: String = "",
+    val email: String = ""
 )
