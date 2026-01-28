@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +37,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.data.model.CepResult
+import com.example.myapplication.data.navigation.Routes
+import androidx.compose.ui.platform.LocalContext
+import com.example.myapplication.data.local.LoginPreferences
+
 
 @Composable
 fun CepScreen(
@@ -46,13 +51,39 @@ fun CepScreen(
     var cepInput by remember { mutableStateOf("") }
     val cepState by viewModel.cepState.collectAsStateWithLifecycle()
     val listaCep by viewModel.listaFavoritos.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // 🔹 Parte de cima (busca e resultado)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Consulta CEP",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Button(
+                onClick = {
+                    // Fazer logout: limpar SharedPreferences e voltar para tela de login
+                    LoginPreferences.clear(context)
+                    navController.navigate(Routes.LOGIN) {
+                        popUpTo(Routes.CEP) { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(text = "Logout", color = MaterialTheme.colorScheme.onError)
+            }
+        }
+
         Column(
             modifier = Modifier
                 .weight(1f)   // ocupa todo o espaço disponível acima
@@ -60,11 +91,6 @@ fun CepScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Consulta CEP",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
-            )
 
             OutlinedTextField(
                 value = cepInput,
@@ -178,9 +204,10 @@ fun CepResultCard(cepResult: CepResult, onClick: () -> Unit = {}) {
         ) {
             Button(
                 onClick = onClick,
-                shape = RoundedCornerShape(5.dp)
+                shape = RoundedCornerShape(5.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text("Favoritar")
+                Text("Remover")
             }
 
         }

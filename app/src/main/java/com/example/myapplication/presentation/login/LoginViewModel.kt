@@ -1,9 +1,11 @@
 package com.example.myapplication.presentation.login
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import com.example.myapplication.data.local.LoginPreferences
 
 class LoginViewModel : ViewModel() {
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState())
@@ -19,9 +21,25 @@ class LoginViewModel : ViewModel() {
     }
 
     fun isEnabled () : Boolean{
-        if (_uiState.value.usuario.isEmpty() and _uiState.value.senha.isEmpty())
-            return false
+        return _uiState.value.usuario.isNotBlank() && _uiState.value.senha.isNotBlank()
+    }
 
-        return true
+    fun saveCredentials(context: Context) {
+        val user = _uiState.value.usuario
+        val pass = _uiState.value.senha
+        LoginPreferences.saveLogin(context, user, pass)
+    }
+
+    fun loadSavedCredentials(context: Context) {
+        val user = LoginPreferences.getUser(context)
+        val pass = LoginPreferences.getPass(context)
+        if (user != null && pass != null) {
+            _uiState.value = _uiState.value.copy(usuario = user, senha = pass)
+        }
+    }
+
+    fun clearSavedCredentials(context: Context) {
+        LoginPreferences.clear(context)
+        _uiState.value = LoginUiState()
     }
 }

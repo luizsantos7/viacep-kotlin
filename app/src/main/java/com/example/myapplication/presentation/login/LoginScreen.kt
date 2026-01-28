@@ -12,25 +12,39 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.myapplication.data.navigation.Routes
+import androidx.compose.ui.platform.LocalContext
+import com.example.myapplication.data.local.LoginPreferences
 
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navController: NavHostController, modifier: Modifier) {
     val uiState = viewModel.uiState.collectAsState().value
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.loadSavedCredentials(context)
+        if (LoginPreferences.isLogged(context)) {
+            navController.navigate(Routes.CEP) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
+            }
+        }
+    }
+
     Column(
-        Modifier
+        modifier
             .fillMaxSize()
             .padding(50.dp),
         verticalArrangement = Arrangement.Center,
@@ -39,18 +53,23 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavHostController, mod
         OutlinedTextField(
             value = uiState.usuario,
             onValueChange = { viewModel.onUserTextChange(it) },
-            modifier.fillMaxWidth().padding(vertical = 10.dp),
-            shape = RoundedCornerShape(12.dp)
+            modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            label = {Text("Email")}
         )
 
         OutlinedTextField(
             value = uiState.senha,
             onValueChange = { viewModel.onSenhaTextChange(it) },
-            modifier.fillMaxWidth().padding(vertical = 10.dp),
-            shape = RoundedCornerShape(12.dp)
+            modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            label = {Text("Senha")},
+            visualTransformation = PasswordVisualTransformation()
         )
         Button(
             onClick = {
+                // salva credenciais antes de navegar
+                viewModel.saveCredentials(context)
                 navController.navigate(Routes.CEP) {
                     popUpTo(Routes.LOGIN) { inclusive = true }
                 }
