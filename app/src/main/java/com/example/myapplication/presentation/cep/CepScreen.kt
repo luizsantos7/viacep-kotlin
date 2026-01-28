@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -28,9 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.myapplication.data.model.CepResult
+import com.example.myapplication.presentation.cep.CepViewModel.CepState
 
 @Composable
 fun CepScreen(
@@ -39,64 +43,94 @@ fun CepScreen(
     modifier: Modifier = Modifier
 ) {
     var cepInput by remember { mutableStateOf("") }
-    val cepState by viewModel.cepState.collectAsState()
+    val cepState by viewModel.cepState.collectAsStateWithLifecycle()
+    val listaCep by viewModel.listaFavoritos.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(16.dp)
     ) {
-        Text(
-            text = "Consulta CEP",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        OutlinedTextField(
-            value = cepInput,
-            onValueChange = {
-                if (cepInput.length <= 8 && it.length <= 8)
-                cepInput = it },
-            label = { Text("CEP") },
-            placeholder = { Text("00000-000") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        Button(
-            onClick = { viewModel.buscarCep(cepInput) },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = cepInput.isNotBlank()
+        // 🔹 Parte de cima (busca e resultado)
+        Column(
+            modifier = Modifier
+                .weight(1f)   // ocupa todo o espaço disponível acima
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("Buscar")
+            Text(
+                text = "Consulta CEP",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            OutlinedTextField(
+                value = cepInput,
+                onValueChange = {
+                    if (it.length <= 8) cepInput = it
+                },
+                label = { Text("CEP") },
+                placeholder = { Text("00000-000") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            Button(
+                onClick = { viewModel.buscarCep(cepInput) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = cepInput.isNotBlank()
+            ) {
+                Text("Buscar")
+            }
+
+            when (val state = cepState) {
+                is CepState.Initial -> {}
+                is CepState.Loading -> CircularProgressIndicator()
+                is CepState.Success -> {
+                    CepResultCard(
+                        cepResult = state.cepResult,
+                        onClick = { viewModel.favoritarCep(state.cepResult.cep) }
+                    )
+                }
+
+                is CepState.Error -> {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Text(
+                            text = state.message,
+                            modifier = Modifier.padding(16.dp),
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
         }
 
-        // Exibir resultado
-        when (val state = cepState) {
-            is CepState.Initial -> {}
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Favoritos",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
 
-            is CepState.Loading -> {
-                CircularProgressIndicator()
-            }
-
-            is CepState.Success -> {
-                CepResultCard(cepResult = state.cepResult)
-            }
-
-            is CepState.Error -> {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Text(
-                        text = state.message,
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onErrorContainer
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(items = listaCep,) { card ->
+                    CepResultCard(
+                        cepResult = card,
+                        onClick = { viewModel.desfavoritarCep(card.cep) }
                     )
                 }
             }
@@ -104,11 +138,14 @@ fun CepScreen(
     }
 }
 
+
 @Composable
-fun CepResultCard(cepResult: CepResult) {
+fun CepResultCard(cepResult: CepResult, onClick: () -> Unit = {}) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -139,7 +176,7 @@ fun CepResultCard(cepResult: CepResult) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(
-                onClick = {},
+                onClick = onClick,
                 shape = RoundedCornerShape(5.dp)
             ) {
                 Text("Favoritar")

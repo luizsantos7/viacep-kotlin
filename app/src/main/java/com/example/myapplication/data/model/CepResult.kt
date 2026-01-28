@@ -8,4 +8,5 @@ data class CepResult(
     val estado: String,
     val uf: String,
     val erro: Boolean? = null,
+    var isFav: Boolean = false,
 )
